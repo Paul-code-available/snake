@@ -8,10 +8,7 @@ import java.awt.event.KeyEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+import javax.swing.*;
 
 public class GamePanel extends JPanel {
 
@@ -29,6 +26,8 @@ public class GamePanel extends JPanel {
 
 	// contador de comidas
 	int contadorComidas = 0;
+
+    int contadorPuntaje = 0;
 	
 	// Coordenadas de la cabeza de la serpiente
 	int snakeX;
@@ -83,7 +82,7 @@ public class GamePanel extends JPanel {
 		add(panelPuntaje);
 		
 		// etiqueta de puntaje
-		JLabel lblPuntaje = new JLabel("Puntaje: " + contadorComidas);
+		JLabel lblPuntaje = new JLabel("Puntaje: " + contadorPuntaje);
 		panelPuntaje.add(lblPuntaje);
 
 		// Permitir que el panel reciba eventos de teclado
@@ -226,6 +225,7 @@ public class GamePanel extends JPanel {
                 contadorComidas = 0;
             }
 			contadorComidas ++;
+            contadorPuntaje++;
             aumentarVelocidad();
 			
 		}
@@ -234,6 +234,7 @@ public class GamePanel extends JPanel {
 	public void colisionCabezaConCuerpo() {
 		for (int i = 1; i < snakeBody.size(); i++) {
 			if (snakeBody.get(0).x == snakeBody.get(i).x && snakeBody.get(0).y == snakeBody.get(i).y) {
+                mensajeGameOver();
 				timer.stop();
 				resetGame();
 				timer.start();
@@ -244,6 +245,7 @@ public class GamePanel extends JPanel {
 	
 	public void delimitationGame(){
         if ((snakeX > 600 || snakeX < 0 ) || (snakeY > 600 || snakeY < 0)){
+            mensajeGameOver();
             timer.stop();
             resetGame();
             timer.start();
@@ -254,6 +256,11 @@ public class GamePanel extends JPanel {
     public void resetGame(){
         snakeX = 250;
         snakeY = 100;
+
+        delay = 150;
+
+        contadorComidas = 0;
+        contadorPuntaje = 0;
 
         direction = 'R';
         ultimaDireccion = 'R';
@@ -272,5 +279,10 @@ public class GamePanel extends JPanel {
             delay -= 15;
             timer.setDelay(delay);
         }
+    }
+
+    public void mensajeGameOver(){
+        JFrame frame = new JFrame();
+        JOptionPane.showMessageDialog(frame, "Puntaje: " + contadorPuntaje, "Game Over", JOptionPane.PLAIN_MESSAGE);
     }
 }
