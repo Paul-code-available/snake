@@ -1,11 +1,14 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Panel;
 import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -22,6 +25,9 @@ public class GamePanel extends JPanel {
 	// Timer que controla el ciclo del juego
 	Timer timer;
 
+	// contador de comidas
+	int contadorComidas = 0;
+	
 	// Coordenadas de la cabeza de la serpiente
 	int snakeX;
 	int snakeY;
@@ -56,9 +62,6 @@ public class GamePanel extends JPanel {
 
 		// Crear la lista que almacenará el cuerpo de la serpiente
 		snakeBody = new LinkedList<Point>();
-		
-		// crea la lista que solo almacenará una manzana
-		almacenComida = new LinkedList<Point>();
 
 		// Agregar los primeros segmentos de la serpiente
 		snakeBody.add(new Point(250, 100));
@@ -67,9 +70,20 @@ public class GamePanel extends JPanel {
 
 		// Configurar tamaño del panel
 		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		setLayout(null);
 
 		// Color de fondo
 		this.setBackground(Color.black);
+		
+		// panel de puntaje
+		Panel panelPuntaje = new Panel();
+		panelPuntaje.setBounds(550, 0, 70, 50);
+		panelPuntaje.setBackground(Color.BLUE);
+		add(panelPuntaje);
+		
+		// etiqueta de puntaje
+		JLabel lblPuntaje = new JLabel("Puntaje: " + contadorComidas);
+		panelPuntaje.add(lblPuntaje);
 
 		// Permitir que el panel reciba eventos de teclado
 		this.setFocusable(true);
@@ -212,6 +226,7 @@ public class GamePanel extends JPanel {
 			comidaY = (int) (Math.random() * 23 + 1) * 25;
 			
 			snakeBody.add(new Point(snakeBody.getLast().x - 25, snakeBody.getLast().y));
+			contadorComidas += 1;
 			
 		}
 	}
