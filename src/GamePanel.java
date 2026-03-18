@@ -1,14 +1,12 @@
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Panel;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
+import utils.AppFont;
 
 import javax.swing.*;
+import javax.swing.text.html.Option;
 
 public class GamePanel extends JPanel {
 
@@ -281,8 +279,24 @@ public class GamePanel extends JPanel {
         }
     }
 
+
+
     public void mensajeGameOver(){
         JFrame frame = new JFrame();
-        JOptionPane.showMessageDialog(frame, "Puntaje: " + contadorPuntaje, "Game Over", JOptionPane.PLAIN_MESSAGE);
+        ImageIcon icono= new ImageIcon("src/img/icono.png");
+
+        Image escalarIcono = icono.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+
+        ImageIcon iconoFinal = new ImageIcon(escalarIcono);
+
+        JLabel mensajes = new JLabel("<html><center>Puntaje:" + contadorPuntaje + "<br><br>¿Desea volver a jugar?</center></html>");
+        mensajes.setFont(AppFont.medium());
+        mensajes.setHorizontalAlignment(SwingConstants.CENTER);
+
+        int opcion = JOptionPane.showOptionDialog(frame, mensajes, "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, iconoFinal, null, null);
+
+        if (opcion == JOptionPane.NO_OPTION){
+            System.exit(0);
+        }
     }
 }
