@@ -8,11 +8,15 @@ import java.awt.event.KeyEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+
+import javax.swing.*;
+
 
 public class GamePanel extends JPanel {
 
@@ -89,9 +93,11 @@ public class GamePanel extends JPanel {
 		
 		
 		// etiqueta de puntaje
+
 		lblPuntaje = new JLabel("0");
 		lblPuntaje.setPreferredSize(new Dimension(50, 50));
 		lblPuntaje.setForeground(Color.WHITE); // Texto blanco sobre fondo azul
+
 		panelPuntaje.add(lblPuntaje);
 
 		// Permitir que el panel reciba eventos de teclado
@@ -234,7 +240,9 @@ public class GamePanel extends JPanel {
             if(contadorComidas > 5){
                 contadorComidas = 0;
             }
+
 			contadorComidas++;
+
             aumentarVelocidad();
             
             contadorPuntaje += 10;
@@ -248,6 +256,7 @@ public class GamePanel extends JPanel {
 	public void colisionCabezaConCuerpo() {
 		for (int i = 1; i < snakeBody.size(); i++) {
 			if (snakeBody.get(0).x == snakeBody.get(i).x && snakeBody.get(0).y == snakeBody.get(i).y) {
+                mensajeGameOver();
 				timer.stop();
 				resetGame();
 				timer.start();
@@ -258,6 +267,7 @@ public class GamePanel extends JPanel {
 	
 	public void delimitationGame(){
         if ((snakeX > 600 || snakeX < 0 ) || (snakeY > 600 || snakeY < 0)){
+            mensajeGameOver();
             timer.stop();
             resetGame();
             timer.start();
@@ -268,6 +278,11 @@ public class GamePanel extends JPanel {
     public void resetGame(){
         snakeX = 250;
         snakeY = 100;
+
+        delay = 150;
+
+        contadorComidas = 0;
+        contadorPuntaje = 0;
 
         direction = 'R';
         ultimaDireccion = 'R';
@@ -287,6 +302,11 @@ public class GamePanel extends JPanel {
             timer.setDelay(delay);
         }
     }
-    
+
+
+    public void mensajeGameOver(){
+        JFrame frame = new JFrame();
+        JOptionPane.showMessageDialog(frame, "Puntaje: " + contadorPuntaje, "Game Over", JOptionPane.PLAIN_MESSAGE);
+    }
 
 }
