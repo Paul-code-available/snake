@@ -10,6 +10,7 @@ import java.util.LinkedList;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -29,6 +30,10 @@ public class GamePanel extends JPanel {
 
 	// contador de comidas
 	int contadorComidas = 0;
+	
+	// contador puntaje
+	int contadorPuntaje = 0;
+	JLabel lblPuntaje;
 	
 	// Coordenadas de la cabeza de la serpiente
 	int snakeX;
@@ -78,12 +83,15 @@ public class GamePanel extends JPanel {
 		
 		// panel de puntaje
 		Panel panelPuntaje = new Panel();
-		panelPuntaje.setBounds(550, 0, 70, 50);
-		panelPuntaje.setBackground(Color.BLUE);
+		panelPuntaje.setBounds(530, 0, 50, 50);
+		
 		add(panelPuntaje);
 		
+		
 		// etiqueta de puntaje
-		JLabel lblPuntaje = new JLabel("Puntaje: " + contadorComidas);
+		lblPuntaje = new JLabel("0");
+		lblPuntaje.setPreferredSize(new Dimension(50, 50));
+		lblPuntaje.setForeground(Color.WHITE); // Texto blanco sobre fondo azul
 		panelPuntaje.add(lblPuntaje);
 
 		// Permitir que el panel reciba eventos de teclado
@@ -129,6 +137,7 @@ public class GamePanel extends JPanel {
             comerManzana();
             colisionCabezaConCuerpo();
             delimitationGame();
+        
 		});
 
 		timer.start(); //Inicia el timer, para detenerlo se puede usar timer.stop();
@@ -225,8 +234,13 @@ public class GamePanel extends JPanel {
             if(contadorComidas > 5){
                 contadorComidas = 0;
             }
-			contadorComidas ++;
+			contadorComidas++;
             aumentarVelocidad();
+            
+            contadorPuntaje += 10;
+ 
+            lblPuntaje.setText(String.valueOf(contadorPuntaje));
+            
 			
 		}
 	}
@@ -273,4 +287,6 @@ public class GamePanel extends JPanel {
             timer.setDelay(delay);
         }
     }
+    
+
 }
