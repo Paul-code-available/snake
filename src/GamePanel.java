@@ -25,6 +25,8 @@ public class GamePanel extends JPanel {
 	// Timer que controla el ciclo del juego
 	Timer timer;
 
+    int delay = 150;
+
 	// contador de comidas
 	int contadorComidas = 0;
 	
@@ -45,7 +47,6 @@ public class GamePanel extends JPanel {
 
 	// Lista enlazada que almacena todas las posiciones del cuerpo de la serpiente
 	LinkedList<Point> snakeBody;
-	LinkedList<Point> almacenComida;
 
 	public GamePanel() {
 
@@ -125,6 +126,9 @@ public class GamePanel extends JPanel {
 		timer = new Timer(150, e -> {
 			move();     // Actualiza la posición de la serpiente
 			repaint();  // Redibuja el panel (se ejecuta paintComponent)
+            comerManzana();
+            colisionCabezaConCuerpo();
+            delimitationGame();
 		});
 
 		timer.start(); //Inicia el timer, para detenerlo se puede usar timer.stop();
@@ -209,15 +213,6 @@ public class GamePanel extends JPanel {
 
 		// Eliminar el último elemento para mantener el mismo tamaño
 		snakeBody.removeLast();
-		
-		// cambia la ubicacion de la manzana y añade un elemento a la serpiente
-		comerManzana();
-		
-		// termina el juego si la cabeza choca con cualquier parte del cuerpo 
-		colisionCabezaConCuerpo();
-		
-		// si la cabeza toca los limites del panel se termina el juego
-		delimitationGame();
 	}
 	
 	public void comerManzana() {
@@ -226,7 +221,12 @@ public class GamePanel extends JPanel {
 			comidaY = (int) (Math.random() * 23 + 1) * 25;
 			
 			snakeBody.add(new Point(snakeBody.getLast().x - 25, snakeBody.getLast().y));
-			contadorComidas += 1;
+
+            if(contadorComidas > 5){
+                contadorComidas = 0;
+            }
+			contadorComidas ++;
+            aumentarVelocidad();
 			
 		}
 	}
@@ -237,7 +237,6 @@ public class GamePanel extends JPanel {
 				timer.stop();
 				resetGame();
 				timer.start();
-				break;
 			}
 		}
 		
@@ -266,5 +265,12 @@ public class GamePanel extends JPanel {
 
         comidaX = ((int) (Math.random() * 23) + 1) * 25;
         comidaX = ((int) (Math.random() * 23) + 1) * 25;
+    }
+
+    public void aumentarVelocidad(){
+        if (contadorComidas == 5){
+            delay -= 15;
+            timer.setDelay(delay);
+        }
     }
 }
