@@ -28,6 +28,8 @@ public class GamePanel extends JPanel {
 	// Tamaño de cada celda del tablero (grid)
 	static final int UNIT_SIZE = 25;
 
+    int inicioMapa = 25;
+
 	// Timer que controla el ciclo del juego
 	Timer timer;
 
@@ -55,6 +57,8 @@ public class GamePanel extends JPanel {
 	// ultima direccion del movimiento de la serpiente
 	char ultimaDireccion;
 
+    boolean pausado = false;
+
 	// Lista enlazada que almacena todas las posiciones del cuerpo de la serpiente
 	LinkedList<Point> snakeBody;
 
@@ -78,6 +82,11 @@ public class GamePanel extends JPanel {
     BufferedImage curva3;
     BufferedImage curva4;
     Image imgManzana;
+    ImageIcon iconoManzanaOriginal;
+    Image imagenEscaladaIcono;
+    ImageIcon iconoManzanaFinal;
+    JLabel lblIcono;
+
 
     Point anterior;
     Point actual;
@@ -113,20 +122,23 @@ public class GamePanel extends JPanel {
 
 		// Configurar tamaño del panel
 		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		setLayout(null);
-		
+		setLayout(new BorderLayout());
+
 		// panel de puntaje
+        /*
 		Panel panelPuntaje = new Panel();
 		panelPuntaje.setBounds(530, 0, 50, 50);
 
+        JPanel panelPrincipal = new JPanel();
 		add(panelPuntaje);
-		
-		// etiqueta de puntaje
-		lblPuntaje = new JLabel("0");
-		lblPuntaje.setPreferredSize(new Dimension(50, 50));
-		lblPuntaje.setForeground(Color.WHITE); // Texto blanco sobre fondo azul
+         */
 
-		panelPuntaje.add(lblPuntaje);
+		// etiqueta de puntaje
+		//lblPuntaje = new JLabel("0");
+		//lblPuntaje.setPreferredSize(new Dimension(50, 50));
+		//lblPuntaje.setForeground(Color.WHITE); // Texto blanco sobre fondo azul
+
+		//panelPuntaje.add(lblPuntaje);
 
 		// Permitir que el panel reciba eventos de teclado
 		this.setFocusable(true);
@@ -170,9 +182,18 @@ public class GamePanel extends JPanel {
                     break;
 				}
 
-                if (e.getKeyCode() == KeyEvent.VK_P){
-                    timer.stop();
+                if (e.getKeyCode() == KeyEvent.VK_P) {
+                    if (pausado) {
+                        timer.start();
+                        reproducirMusica();
+                    } else {
+                        timer.stop();
+                        detenerMusica();
+                    }
+                    pausado = !pausado;
+                    repaint(); // para que se dibuje el overlay de pausa
                 }
+
 			}
         });
 
@@ -186,6 +207,8 @@ public class GamePanel extends JPanel {
 		});
 
 		timer.start(); //Inicia el timer, para detenerlo se puede usar timer.stop();
+
+        panelSuperior();
 	}
 
 	// Método encargado de dibujar los elementos del juego
@@ -193,6 +216,26 @@ public class GamePanel extends JPanel {
         super.paintComponent(g);
 
         g.drawImage(fondo, 0, 0, getWidth(), getHeight(), null);
+
+
+        Graphics2D g2 = (Graphics2D) g;
+        float[] dash = {6f, 6f};
+
+        g2.setStroke(new BasicStroke(
+                1,
+                BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_BEVEL,
+                0,
+                dash,
+                0
+        ));
+        for (int j = 25; j < getHeight(); j+=25){
+            g.setColor(new Color(255, 255, 255, 30));
+
+            g.drawLine(j, 25, j, 600);
+            g.drawLine(0, j, 600, j);
+        }
+
 
         // Recorrer todas las partes de la serpiente
         for (int i = 0; i < snakeBody.size(); i++) {
@@ -274,7 +317,15 @@ public class GamePanel extends JPanel {
 
             // dibuja la manzana
             g.drawImage(imgManzana, comidaX, comidaY, UNIT_SIZE, UNIT_SIZE, null);
+        }
 
+        if (pausado) {
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, WIDTH, HEIGHT);
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(AppFont.title());
+            g2.drawString("PAUSA", WIDTH / 2 - 80, HEIGHT / 2);
         }
     }
 
@@ -365,7 +416,7 @@ public class GamePanel extends JPanel {
 	}
 	
 	public void delimitationGame(){
-        if ((snakeX > 600 || snakeX < 0 ) || (snakeY > 600 || snakeY < 0)){
+        if ((snakeX > 600 || snakeX < 0 ) || (snakeY > 600 || snakeY < inicioMapa)){
             mensajeGameOver();
             timer.stop();
             resetGame();
@@ -375,6 +426,9 @@ public class GamePanel extends JPanel {
     }
 
     public void resetGame(){
+        cargarMusica();
+        reproducirMusica();
+
         snakeX = 250;
         snakeY = 100;
 
@@ -524,6 +578,33 @@ public class GamePanel extends JPanel {
             musicaFondo.stop();
         }
     }
+
+    public void panelSuperior(){
+        JPanel panelSuperiorHorizontal = new JPanel();
+        panelSuperiorHorizontal.setLayout(new BoxLayout(panelSuperiorHorizontal, BoxLayout.X_AXIS));
+        panelSuperiorHorizontal.setPreferredSize(new Dimension(getWidth(), inicioMapa));
+        panelSuperiorHorizontal.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        panelSuperiorHorizontal.setBackground(Color.BLACK);
+
+        iconoManzanaOriginal = new ImageIcon(getClass().getResource("/img/apple.png"));
+        imagenEscaladaIcono = iconoManzanaOriginal.getImage().getScaledInstance(15, 15, Image.SCALE_SMOOTH);
+        iconoManzanaFinal = new ImageIcon(imagenEscaladaIcono);
+
+        lblIcono = new JLabel(iconoManzanaFinal);
+
+        lblPuntaje = new JLabel("0");
+        lblPuntaje.setPreferredSize(new Dimension(50, 50));
+        lblPuntaje.setForeground(Color.WHITE);
+        lblPuntaje.setFont(AppFont.small());
+
+        panelSuperiorHorizontal.add(lblIcono);
+        panelSuperiorHorizontal.add(Box.createHorizontalStrut(10));
+        panelSuperiorHorizontal.add(lblPuntaje);
+
+
+        add(panelSuperiorHorizontal, BorderLayout.NORTH);
+    }
+
 
 
 }
