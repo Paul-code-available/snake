@@ -118,7 +118,7 @@ public class GamePanel extends JPanel {
         generarManzana();
 
         cargarSprites();
-        imgManzana = new ImageIcon("src/img/apple.png").getImage();
+        imgManzana = new ImageIcon(getClass().getResource("/img/apple.png")).getImage();
 
 		// Configurar tamaño del panel
 		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -183,22 +183,14 @@ public class GamePanel extends JPanel {
 				}
 
                 if (e.getKeyCode() == KeyEvent.VK_P) {
-                    if (pausado) {
-                        timer.start();
-                        reproducirMusica();
-                    } else {
-                        timer.stop();
-                        detenerMusica();
-                    }
-                    pausado = !pausado;
-                    repaint(); // para que se dibuje el overlay de pausa
+                    pauseGame();
                 }
 
 			}
         });
 
 		// Timer que ejecuta el ciclo del juego cada 150 ms
-		timer = new Timer(150, e -> {
+		timer = new Timer(160, e -> {
 			move();     // Actualiza la posición de la serpiente
 			repaint();  // Redibuja el panel (se ejecuta paintComponent)
             comerManzana();
@@ -325,7 +317,8 @@ public class GamePanel extends JPanel {
 
             g2.setColor(Color.WHITE);
             g2.setFont(AppFont.title());
-            g2.drawString("PAUSA", WIDTH / 2 - 80, HEIGHT / 2);
+            g2.drawString("PAUSA", WIDTH / 2 - 30, HEIGHT / 2);
+
         }
     }
 
@@ -460,7 +453,7 @@ public class GamePanel extends JPanel {
         detenerMusica();
 
         JFrame frame = new JFrame();
-        ImageIcon icono= new ImageIcon("src/img/icono.png");
+        ImageIcon icono= new ImageIcon(getClass().getResource("/img/icono.png"));
 
         Image escalarIcono = icono.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
 
@@ -501,7 +494,7 @@ public class GamePanel extends JPanel {
 
     public void cargarSprites(){
         try{
-            spriteSnake = ImageIO.read(new File("src/img/snake.png"));
+            spriteSnake = ImageIO.read(getClass().getResource("/img/snake.png"));
 
             int TILE = 40;
 
@@ -579,6 +572,18 @@ public class GamePanel extends JPanel {
         }
     }
 
+    public void pauseGame(){
+        if (pausado) {
+            timer.start();
+            reproducirMusica();
+        } else {
+            timer.stop();
+            detenerMusica();
+        }
+        pausado = !pausado;
+        repaint();
+    }
+
     public void panelSuperior(){
         JPanel panelSuperiorHorizontal = new JPanel();
         panelSuperiorHorizontal.setLayout(new BoxLayout(panelSuperiorHorizontal, BoxLayout.X_AXIS));
@@ -603,6 +608,18 @@ public class GamePanel extends JPanel {
 
 
         add(panelSuperiorHorizontal, BorderLayout.NORTH);
+    }
+
+    public void seleccionarDificultad(String comando){
+        if (comando.equals("facil")){
+            timer.setDelay(175);
+        }
+        else if (comando.equals("dificil")){
+            timer.setDelay(140);
+        }
+        else {
+            timer.setDelay(160);
+        }
     }
 
 
